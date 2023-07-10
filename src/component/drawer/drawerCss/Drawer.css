@@ -1,0 +1,10 @@
+
+  .border-gradient {
+    --border-color-1: #ff0000;
+    --border-color-2: #7a2969;
+    --border-color-3: #0000ff;
+    --border-width: 1px;
+    height: 100%!important;
+    border-right: var(--border-width) solid transparent;
+    border-image: linear-gradient(to bottom, var(--border-color-1), var(--border-color-2), var(--border-color-3)) 1 100%;
+  }
