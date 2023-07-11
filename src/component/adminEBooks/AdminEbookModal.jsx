@@ -1,9 +1,18 @@
 // import axios from "axios";
 // import { useState } from "react";
-import axios from "axios";import { useState } from "react";
+import axios from "axios";
+import { useState } from "react";
+import JoditEditor from 'jodit-react';
 import { useForm } from "react-hook-form";
 import { toast } from "react-hot-toast";
+import "./AdminEbooksCss/AdminEbookModal.css";
+
 const AdminEbookModal=()=>{
+  const [editorValue, setEditorValue] = useState('');
+  console.log(editorValue)
+  const handleEditorChange = (value) => {
+    setEditorValue(value);
+  };
     const [imgFileName, setImgFileName] = useState('');
     const { register, handleSubmit, reset } = useForm();
 
@@ -14,12 +23,12 @@ const AdminEbookModal=()=>{
       }
     };
     
-
     const onSubmitData = data => {
-        if(data?.bookName && data?.description && imgFileName){
+
+        if(data?.bookName && editorValue && imgFileName){
             const E_Book_Data = {
                 bookName: data?.bookName,
-                description: data?.description,
+                description: editorValue,
                 imgFileName: imgFileName
             }
             axios.post(`${import.meta.env.VITE_REACT_APP_SERVER_URL}/ebook`,{
@@ -59,34 +68,45 @@ const AdminEbookModal=()=>{
         }
       }
       
-
+      const config ={
+        height: "300px",
+        placeholder: 'write description...',
+      }
    
     return (
     <>
     {/* <img src={} alt="" /> */}
-    <dialog id="my_modal_3" className="modal">
-  <form onSubmit={handleSubmit(onSubmitData)} method="dialog" className="modal-box w-[800px] bg-white text-gray-950" encType="multipart/formData">
+    <dialog id="my_modal_3" className="modal w-screen h-screen">
+  <form onSubmit={handleSubmit(onSubmitData)} className="modal-box bg-white text-gray-950 w-[1000px] h-[500px] max-w-none max-h-none static" encType="multipart/formData">
     <button onClick={closeModal} className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
     <div className="my-5">
       <h1 className="mb-2 text-xl font-semibold text-gray-950">Add Book</h1>
-      <div className="flex gap-x-5 justify-center">
         <div className="w-full">
           <label className="label">
             <span className="label-text">Book name</span>
           </label>
-          <textarea {...register("bookName")} required className="textarea textarea-primary inline w-full bg-white" placeholder="Book-name"></textarea>
+          <input {...register("bookName")} type="text" placeholder="Book-name" className="input input-bordered input-primary w-full bg-white" required />
+          {/* <textarea {...register("bookName")} required className="textarea textarea-primary inline w-full bg-white" placeholder="Book-name"></textarea> */}
         </div>
-        <div className="w-full">
+        <div className="w-full relative">
           <label className="label">
             <span className="label-text">Description</span>
           </label>
-          <textarea {...register("description")} required className="textarea textarea-primary inline w-full bg-white" placeholder="Description"></textarea>
+         
+         {/* use here jodit editor */}
+         <JoditEditor
+           value={editorValue}
+           onSubmit={handleEditorChange}
+           required
+           config={config}
+        />
+          {/* <textarea {...register("description")} required className="textarea textarea-primary inline w-full bg-white" placeholder="Description"></textarea> */}
         </div>
+      <div className="flex justify-between mt-4">
+      <input onChange={handleFileUpload} required name="files" type="file" className="file-input file-input-bordered file-input-primary w-[50%] max-w-xs bg-white" />
+      <button type="submit" className="btn bg-[#FE0000] hover:bg-[#FE0000] border-none text-white w-[30%]">Submit</button>
       </div>
-      <input onChange={handleFileUpload} required name="files" type="file" className="file-input file-input-bordered file-input-primary w-[50%] max-w-xs bg-white mt-3" />
-    </div>
-    <div className="flex justify-center">
-      <button type="submit" className="btn bg-[#FE0000] hover:bg-[#FE0000] border-none text-white w-[70%]">Submit</button>
+
     </div>
   </form>
 </dialog>
