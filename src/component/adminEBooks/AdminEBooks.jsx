@@ -15,6 +15,7 @@ const AdminEBooks=()=>{
   const [bookData, setBookData] = useState([]);
   const [save, setSave]=useState(false);
   const [search, setSearch]=useState('');
+  const [isOpen, setIsOpen] = useState(false);
   // console.log(search);
   const eBookUpdate = data => {
     if(data?.bookName && data?.description && imgFileName || existingFileName && save){
@@ -98,12 +99,21 @@ const AdminEBooks=()=>{
       console.error(error);
     });
     }
+    const openModal = () => {
+      setIsOpen(true);
+    };
+    const closeModal = () => {
+      setIsOpen(false);
+    };
 
     return(
         <div className="">
             <div className="overflow-x-auto">
                 <div className="mb-9 justify-between items-center flex">
-                <button className="btn bg-[#FE0000] hover:bg-[#fc0c0c] text-white border-none" onClick={()=>window.my_modal_3.showModal()}>Add Book</button>
+                {/* <button className="btn bg-[#FE0000] hover:bg-[#fc0c0c] text-white border-none" onClick={()=>window.my_modal_3.showModal()}>Add Book</button> */}
+                <button className="btn bg-[#FE0000] hover:bg-[#fc0c0c] text-white border-none" onClick={openModal}>
+                Add Book
+      </button>
               <div className=" bg-white">
                 <div className="flex">
                 <input onChange={(e) => setSearch(e.target.value)} type="text" placeholder="Search..." className="input bg-white input-bordered w-[279px] pr-16 text-gray-950" />
@@ -125,9 +135,6 @@ const AdminEBooks=()=>{
               </tr>
             </thead>
       <tbody>
-     { 
-     console.log(bookData)
-     }
         {
           
           bookData.length === 0 ? (
@@ -225,7 +232,7 @@ const AdminEBooks=()=>{
   </table>
  </form>
 </div>
-<AdminEbookModal />
+<AdminEbookModal modalIsopen={isOpen} coloseModal={closeModal} />
         </div>
     )
 }
