@@ -7,7 +7,7 @@ const AdminNavebar=()=>{
       <div>
           <div className="navbar bg-white px-6 shadow-sm">
   <div className="flex-1">
-    <a className="btn btn-ghost text-2xl font-serif text-[#ED1C20] animate-charcter uppercase">
+    <a className="btn btn-ghost text-2xl font-serif text-[#ED1C20] uppercase">
       Admin
     </a>
   </div>

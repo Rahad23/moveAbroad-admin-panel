@@ -11,7 +11,7 @@ import "./AdminEbooksCss/AdminEbookModal.css";
 const AdminEbookModal=({modalIsopen, coloseModal})=>{
   
   const [editorValue, setEditorValue] = useState('');
-  console.log(editorValue)
+
   const handleEditorChange = (value) => {
     setEditorValue(value);
   };
@@ -19,6 +19,7 @@ const AdminEbookModal=({modalIsopen, coloseModal})=>{
     const [imgFileName, setImgFileName] = useState('');
     const { register, handleSubmit, reset } = useForm();
     
+
     const onSubmitData = data => {
       console.log(data, editorValue, imgFileName)
         if(data?.bookName && editorValue && imgFileName){
@@ -68,11 +69,10 @@ const AdminEbookModal=({modalIsopen, coloseModal})=>{
         height: "200px",
         placeholder: 'write description...',
       }
-   
     return (
-    
       <div>
-      {modalIsopen && (
+      {
+      modalIsopen && (
         <div id="modal" className="fixed inset-0 flex items-center justify-center z-50 w-screen">
           <div className="bg-white rounded-lg shadow-lg p-6 overflow-y-auto ">
           <div className="flex justify-end">
@@ -84,7 +84,7 @@ const AdminEbookModal=({modalIsopen, coloseModal})=>{
             <form onSubmit={handleSubmit(onSubmitData)} className=" bg-white text-gray-950 max-w-none max-h-none " encType="multipart/formData">
 
     <div className="my-5">
-      <h1 className="mb-2 text-xl font-semibold text-gray-950">Add Book</h1>
+      <h1 className="mb-2 text-xl font-semibold text-gray-950 animate-charcter capitalize">Add Book</h1>
         <div className="w-full">
           <label className="label">
             <span className="label-text">Book name</span>
@@ -100,7 +100,7 @@ const AdminEbookModal=({modalIsopen, coloseModal})=>{
          {/* use here jodit editor */}
          <JoditEditor
            value={editorValue}
-           onChange={handleEditorChange}
+           onBlur={handleEditorChange}
            required
            config={config}
         />

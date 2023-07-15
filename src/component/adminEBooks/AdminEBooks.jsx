@@ -24,7 +24,6 @@ const AdminEBooks=()=>{
         description: data?.description,
         imgFileName: imgFileName ? imgFileName : existingFileName
     }
-
     axios.patch(`${import.meta.env.VITE_REACT_APP_SERVER_URL}/ebook/${bookId}`, {
       ...E_Book_Data
     })
@@ -196,7 +195,7 @@ const AdminEBooks=()=>{
                          data._id === bookId && edit ? <textarea {...register("description")} className="textarea w-full bg-white textarea-primary text-gray-950 text-lg" defaultValue={data.description} placeholder="write description"></textarea>
                          :
                          <p>
-                           { data.description.length > 20 ? data.description.slice(0, 20)+"..." : data.description}
+                           { data.description.replace(/<[^>]+>/g, '').length > 20 ? data.description.replace(/<[^>]+>/g, '').slice(0, 20)+"..." : data.description.replace(/<[^>]+>/g, '')}
                          </p>
                     }
                     </td>
