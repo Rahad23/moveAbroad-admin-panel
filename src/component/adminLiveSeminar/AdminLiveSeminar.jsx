@@ -1,14 +1,12 @@
 import "./adminLiveSeminarStyle/AdminLiveSeminar.css"
-// import { useForm } from "react-hook-form";
-// import axios from "axios";
 import { useEffect, useState } from "react";
-// import toast from "react-hot-toast";
 import AdminLiveSeminarModal from "./AdminLiveSeminarModal";
 import { BsSearch } from "react-icons/bs";
 import { FaCaretDown } from "react-icons/fa";
 import axios from "axios";
 import Swal from "sweetalert2";
-// import { TimePicker } from 'react-ios-time-picker';
+import { PhotoProvider, PhotoView } from 'react-photo-view';
+import 'react-photo-view/dist/react-photo-view.css';
 function AdminLiveSeminar() {
   const [search, setSearch]=useState('');
   const [liveSeminarData, setLiveSeminarData] = useState([]);
@@ -126,10 +124,14 @@ function AdminLiveSeminar() {
       }).map(data=>
         <tr key={data?.key}>
         <td>
-          <div className="flex items-center space-x-3">
+          <div className="flex items-center space-x-3 cursor-pointer">
             <div className="avatar">
               <div className="mask mask-squircle w-12 h-12">
-                <img src={"http://"+data?.imagePath} alt="Avatar Tailwind CSS Component" />
+              <PhotoProvider>
+                <PhotoView src={"http://"+data?.imagePath}>
+                  <img src={"http://"+data?.imagePath} alt="Avatar Tailwind CSS Component" />
+                </PhotoView>
+              </PhotoProvider>
               </div>
             </div>
           </div>
