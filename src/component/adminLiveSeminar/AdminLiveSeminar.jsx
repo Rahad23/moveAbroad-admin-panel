@@ -1,170 +1,177 @@
 import "./adminLiveSeminarStyle/AdminLiveSeminar.css"
-import { useForm } from "react-hook-form";
+// import { useForm } from "react-hook-form";
+// import axios from "axios";
+import { useEffect, useState } from "react";
+// import toast from "react-hot-toast";
+import AdminLiveSeminarModal from "./AdminLiveSeminarModal";
+import { BsSearch } from "react-icons/bs";
+import { FaCaretDown } from "react-icons/fa";
 import axios from "axios";
-import { useState } from "react";
-import toast from "react-hot-toast";
-
+import Swal from "sweetalert2";
 // import { TimePicker } from 'react-ios-time-picker';
 function AdminLiveSeminar() {
-    const { register, handleSubmit, reset} = useForm();
-    const [imgFileName, setImgFileName] = useState('');
-    const [imgSizeError, setImgSizeError]=useState('');
-    const [status, setStatus] = useState('');
-    const [getDate, setGetDate]=useState('');
-
-    const onSubmit = data => {
-        const selectedTime = addAmPmIndicator(data?.time);
-        if(data?.universityName && data?.aboutUniversity && data?.timingRegistration && getDate && selectedTime && imgFileName){
-            const live_seminar_Data ={
-                universityName: data?.universityName,
-                date: getDate,
-                moduleStartTime: selectedTime,
-                universityImg: imgFileName,
-                aboutUniversity: data?.aboutUniversity,
-                registrationTiming: data?.timingRegistration
-            }
-            axios.post(`${import.meta.env.VITE_REACT_APP_SERVER_URL}/liveOnlineSeminar`,{
-                ...live_seminar_Data,
-            })
-            .then(function (response) {
-                if(response.status === 200){
-                    setImgSizeError('');
-                    toast.success("Success");
-                    reset();
-                }
-              })
-              .catch(function (error) {
-                console.log(error);
-              });
-        }
-
-    };
-
-    const addAmPmIndicator = (time) => {
-        const [hours, minutes] = time.split(":");
-        let formattedHours = parseInt(hours);
-        let amPm = "AM";
-    
-        if (formattedHours >= 12) {
-          amPm = "PM";
-          if (formattedHours > 12) {
-            formattedHours -= 12;
-          }
-        }
-    
-        const formattedTime = `${formattedHours}:${minutes}${amPm}`;
-        return formattedTime;
+  const [search, setSearch]=useState('');
+  const [liveSeminarData, setLiveSeminarData] = useState([]);
+  console.log(liveSeminarData)
+    const [isOpen, setIsOpen] = useState(false);
+      const openModal = () => {
+        setIsOpen(true);
       };
+      const closeModal = () => {
+        setIsOpen(false);
+      };
+      
+      const getLiveSeminar=()=>{
+        axios.get(`${import.meta.env.VITE_REACT_APP_SERVER_URL}/liveOnlineSeminar`)
+        .then(response => {
+            setLiveSeminarData(response.data);
+        })
+        .catch(error => {
+          console.error(error);
+        });
+    }
 
-    function handleFileUpload(event) {
-        const files = event.target.files;
-        const file = files[0];
-        
-        if (file) {
-          const formData = new FormData();
-          formData.append('files', file);
-          
-          axios.post(`${import.meta.env.VITE_REACT_APP_SERVER_URL}/liveSeminar`, formData, {
-            headers: {
-              'Content-Type': 'multipart/form-data'
-            }
-          })
+    const liveSeminarDelete=(_id)=>{
+      Swal.fire({
+        title: 'Are you sure?',
+        text: "Do you want to delete this live seminar?",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Yes, delete it!'
+      }).then((result) => {
+        if (result.isConfirmed) {
+
+          axios.delete(
+            axios.delete(`${import.meta.env.VITE_REACT_APP_SERVER_URL}/liveOnlineSeminar/${_id}`)
             .then(response => {
-              setStatus(response.status)
-              setImgFileName(response.data.filename);
-            })
-            .catch(error => {
-              setStatus('');
-              setImgSizeError(error.response.data.error);
-              console.log(error)
-            });
+              console.log(response.data);
+              if(response.data.acknowledged){
+                location.reload();
+            Swal.fire(
+            'Deleted!',
+            'Your file has been deleted.',
+            'success'
+            )
+              }
+          })
+          .catch(error => {
+            console.error(error);
+          })
+          )
         }
-      }
+      })
+    }
+
+    useEffect(()=>{
+      getLiveSeminar();
+    },[])
 
   return (
     <>
       <div className="d-grid">
         <div className="">
-            <h1 className="text-2xl font-semibold animate-charcter">Manage Live online seminar</h1>
-            <div className="bg-white rounded-lg shadow-lg p-6 overflow-y-auto ">
-            <div className="mb-4">
-            <form onSubmit={handleSubmit(onSubmit)} className=" bg-white text-gray-950 max-w-none max-h-none" encType="multipart/formData">
-
-    <div className="my-5">
-        <div className="w-full">
-          <label className="label">
-            <span className="label-text">University Name</span>
-          </label>
-          <input {...register("universityName")} type="text" placeholder="University Name" className="input input-bordered input-primary w-full bg-white" required />
-        </div>
-        <div className="w-full">
-          <label className="label">
-            <span className="label-text">About University</span>
-          </label>
-          <textarea {...register("aboutUniversity")} className="textarea textarea-bordered w-full bg-white textarea-primary" placeholder="About University" required></textarea>
-        </div>
-        <div className="flex mt-4 items-center">
-        <div className="w-full relative">
-          <label className="label">
-            <span className="label-text">Class start date</span>
-          </label>
-          <input
-  {...register("date")}
-  type="date"
-  className="bg-white text-gray-950 input input-bordered input-primary cursor-pointer"
-  onChange={(e) => {
-    const selectedDate = new Date(e.target.value);
-    const formattedDate = selectedDate.toLocaleDateString("en-US", {
-      day: "numeric",
-      month: "short",
-      year: "numeric",
-    });
-    setGetDate(formattedDate);
-  }}
-/>
-
-        </div>
-        <div className="w-full relative">
-          <label className="label">
-            <span className="label-text">Class start time</span>
-          </label>
-          <input {...register("time")} type="time"  className="bg-white text-gray-950 input input-bordered input-primary cursor-pointer" id="myDateInput" defaultValue="00:00" />
-        </div>
-        <div className="w-full relative">
-          <label className="label">
-            <span className="label-text">Timing of registration</span>
-          </label>
-          <select {...register("timingRegistration")} className="select w-[70%] input-bordered input-primary bg-white text-gray-950">
-        <option disabled selected>Pick</option>
-        <option>1-month</option>
-        <option>2-month</option>
-        <option>3-month</option>
-        <option>4-month</option>
-        <option>5-month</option>
-        <option>6-month</option>
-        <option>7-month</option>
-        <option>8-month</option>
-        <option>9-month</option>
-        <option>10-month</option>
-        <option>11-month</option>
-        <option>1-year</option>
-        </select>
-          {/* <input {...register("time")} type="time"  className="bg-white text-gray-950 input input-bordered input-primary cursor-pointer" id="myDateInput" defaultValue="00:00" /> */}
-        </div>
-        <div className="w-full">
-        <label className="label">
-            <span className="label-text">University Image</span>
-          </label>
-        <input onChange={handleFileUpload} required name="files" type="file" className="file-input file-input-bordered file-input-primary w-full bg-white" />
-        {status ? null : imgSizeError && <span className="text-red-600">{imgSizeError}</span>}
-        </div>
-        </div>
-      <div className="flex justify-center mt-10">
-      <button type="submit" className="btn bg-[#FE0000] hover:bg-[#FE0000] border-none text-white w-[30%]">Submit</button>
-      </div>
-    </div>
-  </form>
+            <div className="mb-9 justify-between items-center flex">
+                <button className="btn bg-[#FE0000] hover:bg-[#fc0c0c] text-white border-none" onClick={openModal}>
+                Add Live seminar
+      </button>
+              <div className=" bg-white">
+                <div className="flex">
+                <input onChange={(e) => setSearch(e.target.value)} type="text" placeholder="Search..." className="input bg-white input-bordered w-[279px] pr-16 text-gray-950" />
+                <button className="btn bg-[#274396] hover:bg-[#D82027] border-none ml-[-15%] rounded-[5px]">
+                    <BsSearch className="text-xl text-white" />
+                </button>
+                </div>
+                
             </div>
+                </div>
+            <div className="bg-white rounded-lg p-6 overflow-y-auto ">
+            <div className="mb-4">
+            <AdminLiveSeminarModal modalIsopen={isOpen} coloseModal={closeModal} />
+            </div>
+          </div>
+          <div className="overflow-x-auto">
+          <table className="table">
+    {/* head */}
+    <thead>
+      <tr>
+        <th>University</th>
+        <th>University Name</th>
+        <th>Class start time</th>
+        <th>Registration time</th>
+        <th>About University</th>
+        <th>Publish Date</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      {
+        liveSeminarData.length === 0 ? (
+          <tr>
+            <td colSpan="4">Data not found</td>
+          </tr>
+        ) 
+        :
+        liveSeminarData.filter((resource) => {
+        const searchLower = search.toLowerCase();
+        const universityNameLower = resource.universityName.toLowerCase();
+        const universityDescriptionLower = resource.aboutUniversity.toLowerCase();
+    
+        return (
+          searchLower === "" ||
+          universityNameLower.includes(searchLower) ||
+          universityDescriptionLower.includes(searchLower)
+        );
+      }).map(data=>
+        <tr key={data?.key}>
+        <td>
+          <div className="flex items-center space-x-3">
+            <div className="avatar">
+              <div className="mask mask-squircle w-12 h-12">
+                <img src={"http://"+data?.imagePath} alt="Avatar Tailwind CSS Component" />
+              </div>
+            </div>
+          </div>
+        </td>
+        <td>
+          {data?.universityName}
+        </td>
+        <td>{data?.classStartTime}</td>
+        <td>
+         {data?.registrationTiming}
+        </td>
+        <td>
+         {data?.aboutUniversity.length > 10 ? data?.aboutUniversity.slice(0, 10)+"..." : data?.aboutUniversity}
+        </td>
+        <td>
+          {data?.publishDate}
+        </td>
+        <th className="dropdown dropdown-bottom">
+        <button className="btn bg-red-600 btn-xs border-none hover:bg-red-600 text-white">Actions <FaCaretDown /></button>
+        <ul tabIndex={0} className="p-2 shadow menu dropdown-content z-[1] bg-white rounded-box w-24 text-gray-950">
+                    <li>
+                        {
+                            <span className="hover:text-gray-950">Edit</span>
+                        }
+                       
+                        </li>
+                    <li>
+                        {
+                           
+                            <span onClick={()=>liveSeminarDelete(data?._id)} className="text-red-600 hover:text-red-600">Delete</span>
+                        }
+                        
+                        
+                        </li>
+                </ul>
+        </th>
+      </tr>
+        ) 
+
+      }
+    </tbody>
+  </table>
           </div>
         </div>
       </div>

@@ -5,6 +5,7 @@ import { BsSearch, BsUpload } from "react-icons/bs";
 import AdminEbookModal from "./AdminEbookModal";
 import { useForm } from "react-hook-form";
 import { toast } from "react-hot-toast";
+import Swal from "sweetalert2";
 
 const AdminEBooks=()=>{
   const { register, handleSubmit } = useForm();
@@ -86,17 +87,33 @@ const AdminEBooks=()=>{
     },[])
 
     const deleteBook=(_id)=>{
-      axios.delete(`${import.meta.env.VITE_REACT_APP_SERVER_URL}/ebook/${_id}`)
-      .then(response => {
-        console.log(response.data);
-        if(response.data.acknowledged){
-          location.reload();
-          toast.error("Delete successful")
+      Swal.fire({
+        title: 'Are you sure?',
+        text: "Do You want to delete this E_Book?",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Yes, delete it!'
+      }).then((result) => {
+        if (result.isConfirmed) {
+          axios.delete(`${import.meta.env.VITE_REACT_APP_SERVER_URL}/ebook/${_id}`)
+          .then(response => {
+            console.log(response.data);
+            if(response.data.acknowledged){
+              location.reload();
+              Swal.fire(
+                'Deleted!',
+                'Your file has been deleted.',
+                'success'
+              )
+            }
+        })
+        .catch(error => {
+          console.error(error);
+        });
         }
-    })
-    .catch(error => {
-      console.error(error);
-    });
+      })
     }
     const openModal = () => {
       setIsOpen(true);

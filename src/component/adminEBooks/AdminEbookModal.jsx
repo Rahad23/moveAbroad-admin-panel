@@ -21,7 +21,7 @@ const AdminEbookModal=({modalIsopen, coloseModal})=>{
     
 
     const onSubmitData = data => {
-      console.log(data, editorValue, imgFileName)
+      // console.log(data, editorValue, imgFileName)
         if(data?.bookName && editorValue && imgFileName){
             const E_Book_Data = {
                 bookName: data?.bookName,
@@ -120,44 +120,6 @@ const AdminEbookModal=({modalIsopen, coloseModal})=>{
     </div>
 
 
-//     <>
-//     {/* <img src={} alt="" /> */}
-//     <dialog id="my_modal_3" className="modal w-screen h-screen">
-//   <form onSubmit={handleSubmit(onSubmitData)} className="modal-box bg-white text-gray-950 w-[1000px] h-[500px] max-w-none max-h-none static" encType="multipart/formData">
-//     <button onClick={closeModal} className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
-//     <div className="my-5">
-//       <h1 className="mb-2 text-xl font-semibold text-gray-950">Add Book</h1>
-//         <div className="w-full">
-//           <label className="label">
-//             <span className="label-text">Book name</span>
-//           </label>
-//           <input {...register("bookName")} type="text" placeholder="Book-name" className="input input-bordered input-primary w-full bg-white" required />
-//           {/* <textarea {...register("bookName")} required className="textarea textarea-primary inline w-full bg-white" placeholder="Book-name"></textarea> */}
-//         </div>
-//         <div className="w-full relative">
-//           <label className="label">
-//             <span className="label-text">Description</span>
-//           </label>
-         
-//          {/* use here jodit editor */}
-//          <JoditEditor
-//            value={editorValue}
-//            onSubmit={handleEditorChange}
-//            required
-//            config={config}
-//         />
-//           {/* <textarea {...register("description")} required className="textarea textarea-primary inline w-full bg-white" placeholder="Description"></textarea> */}
-//         </div>
-//       <div className="flex justify-between mt-4">
-//       <input onChange={handleFileUpload} required name="files" type="file" className="file-input file-input-bordered file-input-primary w-[50%] max-w-xs bg-white" />
-//       <button type="submit" className="btn bg-[#FE0000] hover:bg-[#FE0000] border-none text-white w-[30%]">Submit</button>
-//       </div>
-
-//     </div>
-//   </form>
-// </dialog>
-
-//     </>
     )
 }
 
