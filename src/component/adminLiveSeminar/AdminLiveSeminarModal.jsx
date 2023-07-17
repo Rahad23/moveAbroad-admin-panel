@@ -1,18 +1,21 @@
 // import axios from "axios";
 // import { useState } from "react";
 import axios from "axios";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "react-hot-toast";
 import "../adminEBooks/AdminEbooksCss/AdminEbookModal.css";
 
 // eslint-disable-next-line react/prop-types
-const AdminLiveSeminarModal=({modalIsopen, coloseModal})=>{
+const AdminLiveSeminarModal=({modalIsopen, coloseModal, id})=>{
+  // console.log(id)
     const { register, handleSubmit, reset} = useForm();
     const [imgFileName, setImgFileName] = useState('');
     const [imgSizeError, setImgSizeError]=useState('');
     const [status, setStatus] = useState('');
     const [getDate, setGetDate]=useState('');
+    const [liveSeminarData, setLiveSeminarData]=useState({});
+    // console.log(liveSeminarData)
     const objectDate = new Date();
     const day = objectDate.getDate();
     const month = objectDate.getMonth()+1;
@@ -20,9 +23,28 @@ const AdminLiveSeminarModal=({modalIsopen, coloseModal})=>{
 
     const formatDate = year + "-" + month + "-" + day;
 
+    const {aboutUniversity,classStartTime,date,imagePath,publishDate,registrationTiming,universityName, _id } = liveSeminarData;
+    const liveSeminarDatas=()=>{
+      //get one live seminar data
+    if(id){
+      axios.get(`${import.meta.env.VITE_REACT_APP_SERVER_URL}/liveOnlineSeminar/${id}`)
+    .then(response => {
+      setLiveSeminarData(response.data);
+  })
+  .catch(error => {
+    console.error(error);
+  });
+    }
+    }
+  
+
+    useEffect(()=>{
+      liveSeminarDatas();
+    },[id])
+
     const onSubmit = data => {
       const selectedTime = addAmPmIndicator(data?.time);
-        if(data?.universityName && data?.aboutUniversity && data?.timingRegistration && getDate && selectedTime && imgFileName){
+        if(data?.universityName && data?.aboutUniversity && data?.timingRegistration && getDate && selectedTime){
             const live_seminar_Data ={
                 universityName: data?.universityName,
                 date: getDate,
@@ -32,7 +54,25 @@ const AdminLiveSeminarModal=({modalIsopen, coloseModal})=>{
                 registrationTiming: data?.timingRegistration,
                 publishDate: formatDate
             }
-            axios.post(`${import.meta.env.VITE_REACT_APP_SERVER_URL}/liveOnlineSeminar`,{
+            if(id){
+              console.log("hello")
+              console.log(liveSeminarData)
+              axios.patch(`${import.meta.env.VITE_REACT_APP_SERVER_URL}/liveOnlineSeminar/${id}`,{
+                ...live_seminar_Data
+              })
+              .then(response => {
+                if(response.data.acknowledged){
+                  toast.success("Update successfully");
+                  reset()
+                  setLiveSeminarData({});
+                }
+              })
+              .catch(error => {
+                // Handle error
+                console.error(error);
+              });
+            }else{
+              axios.post(`${import.meta.env.VITE_REACT_APP_SERVER_URL}/liveOnlineSeminar`,{
                 ...live_seminar_Data,
             })
             .then(function (response) {
@@ -45,6 +85,8 @@ const AdminLiveSeminarModal=({modalIsopen, coloseModal})=>{
               .catch(function (error) {
                 console.log(error);
               });
+            }
+            
         }
 
     };
@@ -106,18 +148,18 @@ const AdminLiveSeminarModal=({modalIsopen, coloseModal})=>{
 <form onSubmit={handleSubmit(onSubmit)} className=" bg-white text-gray-950 max-w-none max-h-none" encType="multipart/formData">
 
 <div className="my-5">
-<h1 className="mb-2 text-xl font-semibold text-gray-950 animate-charcter capitalize">Add Live online seminar</h1>
+<h1 className="mb-2 text-xl font-semibold text-gray-950 animate-charcter capitalize">{id ? "Edit" : "Add"} Live online seminar</h1>
     <div className="w-full">
       <label className="label">
         <span className="label-text">University Name</span>
       </label>
-      <input {...register("universityName")} type="text" placeholder="University Name" className="input input-bordered input-primary w-full bg-white" required />
+      <input {...register("universityName")} defaultValue={universityName ? universityName : null} type="text" placeholder="University Name" className="input input-bordered input-primary w-full bg-white" required />
     </div>
     <div className="w-full">
       <label className="label">
         <span className="label-text">About University</span>
       </label>
-      <textarea {...register("aboutUniversity")} className="textarea textarea-bordered w-full bg-white textarea-primary" placeholder="About University" required></textarea>
+      <textarea {...register("aboutUniversity")} defaultValue={aboutUniversity ? aboutUniversity : null} className="textarea textarea-bordered w-full bg-white textarea-primary" placeholder="About University" required></textarea>
     </div>
     <div className="flex mt-4 items-center">
     <div className="w-full relative">
@@ -127,6 +169,7 @@ const AdminLiveSeminarModal=({modalIsopen, coloseModal})=>{
       <input
 {...register("timingRegistration")}
 type="date"
+defaultValue={registrationTiming ? registrationTiming : null}
 className="bg-white text-gray-950 input input-bordered input-primary cursor-pointer"
 />
       {/* <input {...register("time")} type="time"  className="bg-white text-gray-950 input input-bordered input-primary cursor-pointer" id="myDateInput" defaultValue="00:00" /> */}
@@ -137,6 +180,7 @@ className="bg-white text-gray-950 input input-bordered input-primary cursor-poin
       </label>
       <input
 {...register("date")}
+defaultValue={""}
 type="date"
 className="bg-white text-gray-950 input input-bordered input-primary cursor-pointer"
 onChange={(e) => {
@@ -155,18 +199,24 @@ setGetDate(formattedDate);
       <label className="label">
         <span className="label-text">Class start time</span>
       </label>
-      <input {...register("time")} type="time"  className="bg-white text-gray-950 input input-bordered input-primary cursor-pointer" id="myDateInput" defaultValue="00:00" />
+      <input {...register("time")} type="time"  className="bg-white text-gray-950 input input-bordered input-primary cursor-pointer" id="myDateInput" defaultValue={classStartTime ? classStartTime : "10:30"} />
     </div>
     <div className="w-full">
     <label className="label">
         <span className="label-text">University Image</span>
       </label>
-    <input onChange={handleFileUpload} required name="files" type="file" className="file-input file-input-bordered file-input-primary w-full bg-white" />
+    <input onChange={handleFileUpload} {...id ? "default" : {required: true}} name="files" type="file" className="file-input file-input-bordered file-input-primary w-full bg-white" />
     {status ? null : imgSizeError && <span className="text-red-600">{imgSizeError}</span>}
     </div>
     </div>
   <div className="flex justify-center mt-10">
-  <button type="submit" className="btn bg-[#FE0000] hover:bg-[#FE0000] border-none text-white w-[30%]">Submit</button>
+    {
+      id ?
+<button type="submit" className="btn bg-[#FE0000] hover:bg-[#FE0000] border-none text-white w-[30%]">Update</button>
+:
+<button type="submit" className="btn bg-[#FE0000] hover:bg-[#FE0000] border-none text-white w-[30%]">Submit</button>
+    }
+  
   </div>
 </div>
 </form>

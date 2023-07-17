@@ -1,5 +1,5 @@
 import "./adminLiveSeminarStyle/AdminLiveSeminar.css"
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import AdminLiveSeminarModal from "./AdminLiveSeminarModal";
 import { BsSearch } from "react-icons/bs";
 import { FaCaretDown } from "react-icons/fa";
@@ -7,27 +7,37 @@ import axios from "axios";
 import Swal from "sweetalert2";
 import { PhotoProvider, PhotoView } from 'react-photo-view';
 import 'react-photo-view/dist/react-photo-view.css';
+
+
 function AdminLiveSeminar() {
   const [search, setSearch]=useState('');
   const [liveSeminarData, setLiveSeminarData] = useState([]);
-  console.log(liveSeminarData)
+  const [liveSeminarId, setLiveSeminarId]=useState('');
     const [isOpen, setIsOpen] = useState(false);
+
+
+    axios.get(`${import.meta.env.VITE_REACT_APP_SERVER_URL}/liveOnlineSeminar`)
+    .then(response => {
+      console.log(response.data);
+      setLiveSeminarData(response?.data);
+  })
+  .catch(error => {
+    console.error(error);
+  });
+
+
       const openModal = () => {
         setIsOpen(true);
       };
       const closeModal = () => {
         setIsOpen(false);
+        setLiveSeminarId(null);
       };
       
-      const getLiveSeminar=()=>{
-        axios.get(`${import.meta.env.VITE_REACT_APP_SERVER_URL}/liveOnlineSeminar`)
-        .then(response => {
-            setLiveSeminarData(response.data);
-        })
-        .catch(error => {
-          console.error(error);
-        });
-    }
+      const getId=(_id)=>{
+          setLiveSeminarId(_id);
+          setIsOpen(true);
+      }
 
     const liveSeminarDelete=(_id)=>{
       Swal.fire({
@@ -46,7 +56,7 @@ function AdminLiveSeminar() {
             .then(response => {
               console.log(response.data);
               if(response.data.acknowledged){
-                location.reload();
+                // location.reload();
             Swal.fire(
             'Deleted!',
             'Your file has been deleted.',
@@ -62,9 +72,6 @@ function AdminLiveSeminar() {
       })
     }
 
-    useEffect(()=>{
-      getLiveSeminar();
-    },[])
 
   return (
     <>
@@ -86,7 +93,7 @@ function AdminLiveSeminar() {
                 </div>
             <div className="bg-white rounded-lg p-6 overflow-y-auto ">
             <div className="mb-4">
-            <AdminLiveSeminarModal modalIsopen={isOpen} coloseModal={closeModal} />
+            <AdminLiveSeminarModal modalIsopen={isOpen} id={liveSeminarId} coloseModal={closeModal} />
             </div>
           </div>
           <div className="overflow-x-auto">
@@ -98,7 +105,7 @@ function AdminLiveSeminar() {
         <th>University Name</th>
         <th>Class start time</th>
         <th>Registration time</th>
-        <th>About University</th>
+        {/* <th>Countdown</th> */}
         <th>Publish Date</th>
         <th>Actions</th>
       </tr>
@@ -115,11 +122,14 @@ function AdminLiveSeminar() {
         const searchLower = search.toLowerCase();
         const universityNameLower = resource.universityName.toLowerCase();
         const universityDescriptionLower = resource.aboutUniversity.toLowerCase();
-    
+        const classStartTime = resource.classStartTime.toLowerCase();
+        const publishDate = resource.publishDate.toLowerCase();
         return (
           searchLower === "" ||
           universityNameLower.includes(searchLower) ||
-          universityDescriptionLower.includes(searchLower)
+          universityDescriptionLower.includes(searchLower) ||
+          classStartTime.includes(searchLower) ||
+          publishDate.includes(searchLower)
         );
       }).map(data=>
         <tr key={data?.key}>
@@ -143,28 +153,61 @@ function AdminLiveSeminar() {
         <td>
          {data?.registrationTiming}
         </td>
-        <td>
+        {/* <td>
+        <div className="grid grid-flow-col gap-0 text-center auto-cols-max">
+  <div className="flex flex-col p-2  bg-white text-neutral-content">
+    <span className="countdown font-mono text-sm">
+      <span style={{"--value":data.countdown?.months}}></span>
+    </span>
+    month
+  </div> 
+  <div className="flex flex-col p-2  bg-white text-neutral-content">
+    <span className="countdown font-mono text-sm">
+      <span style={{"--value":data.countdown?.days}}></span>
+    </span>
+    days
+  </div> 
+  <div className="flex flex-col p-2  bg-white text-neutral-content">
+    <span className="countdown font-mono text-sm">
+      <span style={{"--value":data.countdown?.hours}}></span>
+    </span>
+    hours
+  </div> 
+  <div className="flex flex-col p-2  bg-white text-neutral-content">
+    <span className="countdown font-mono text-sm">
+      <span style={{"--value":data.countdown?.minutes}}></span>
+    </span>
+    min
+  </div>
+  <div className="flex flex-col p-2  bg-white text-neutral-content">
+    <span className="countdown font-mono text-sm">
+      <span style={{"--value":data.countdown?.seconds}}></span>
+    </span>
+    sec
+  </div>
+</div> */}
+          {/* <div>
+             <span>{data.countdown?.months}</span>-
+             <span>{data.countdown?.days}</span>-
+             <span>{data.countdown?.hours}</span>-
+             <span>{data.countdown?.minutes}</span>-
+             <span>{data.countdown?.seconds}</span>
+          </div> */}
+        {/* </td> */}
+        {/* <td>
          {data?.aboutUniversity.length > 10 ? data?.aboutUniversity.slice(0, 10)+"..." : data?.aboutUniversity}
-        </td>
+        </td> */}
         <td>
           {data?.publishDate}
         </td>
         <th className="dropdown dropdown-bottom">
         <button className="btn bg-red-600 btn-xs border-none hover:bg-red-600 text-white">Actions <FaCaretDown /></button>
-        <ul tabIndex={0} className="p-2 shadow menu dropdown-content z-[1] bg-white rounded-box w-24 text-gray-950">
+        <ul tabIndex={0} className="p-2 shadow menu dropdown-content z-[1] bg-white w-24 text-gray-950">
                     <li>
-                        {
-                            <span className="hover:text-gray-950">Edit</span>
-                        }
-                       
+                            <span onClick={()=>getId(data?._id)} className="hover:text-gray-950">Edit</span>
                         </li>
                     <li>
-                        {
-                           
                             <span onClick={()=>liveSeminarDelete(data?._id)} className="text-red-600 hover:text-red-600">Delete</span>
-                        }
-                        
-                        
                         </li>
                 </ul>
         </th>
