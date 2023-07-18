@@ -6,7 +6,8 @@ import AdminEbookModal from "./AdminEbookModal";
 import { useForm } from "react-hook-form";
 import { toast } from "react-hot-toast";
 import Swal from "sweetalert2";
-
+import 'react-photo-view/dist/react-photo-view.css';
+import { PhotoProvider, PhotoView } from "react-photo-view";
 const AdminEBooks=()=>{
   const { register, handleSubmit } = useForm();
   const [imgFileName, setImgFileName] = useState('');
@@ -17,6 +18,7 @@ const AdminEBooks=()=>{
   const [save, setSave]=useState(false);
   const [search, setSearch]=useState('');
   const [isOpen, setIsOpen] = useState(false);
+  const [loader, setLoader]=useState(true);
   // console.log(search);
   const eBookUpdate = data => {
     if(data?.bookName && data?.description && imgFileName || existingFileName && save){
@@ -75,6 +77,7 @@ const AdminEBooks=()=>{
     const getEbookData=()=>{
         axios.get(`${import.meta.env.VITE_REACT_APP_SERVER_URL}/ebook`)
         .then(response => {
+          setLoader(false);
             setBookData(response.data);
         })
         .catch(error => {
@@ -126,7 +129,6 @@ const AdminEBooks=()=>{
         <div className="">
             <div className="overflow-x-auto">
                 <div className="mb-9 justify-between items-center flex">
-                {/* <button className="btn bg-[#FE0000] hover:bg-[#fc0c0c] text-white border-none" onClick={()=>window.my_modal_3.showModal()}>Add Book</button> */}
                 <button className="btn bg-[#FE0000] hover:bg-[#fc0c0c] text-white border-none" onClick={openModal}>
                 Add Book
       </button>
@@ -139,114 +141,125 @@ const AdminEBooks=()=>{
                 </div>
             </div>
                 </div>
-      <form onSubmit={handleSubmit(eBookUpdate)}>
-          <table className="table mt-14">
-        {/* head */}
-            <thead className="text-gray-950">
-              <tr>
-                <th>Book</th>
-                <th>Book Name</th>
-                <th>Description</th>
-                <th>Action</th>
-              </tr>
-            </thead>
-      <tbody>
-        {
-          
-          bookData.length === 0 ? (
+      {
+        loader ? <div className="flex items-center justify-center h-[400px]">
+        <span className="loader"></span>
+       </div>
+        :
+        <form onSubmit={handleSubmit(eBookUpdate)}>
+        <table className="table mt-14">
+      {/* head */}
+          <thead className="text-gray-950">
             <tr>
-              <td colSpan="4">Data not found</td>
+              <th>Book</th>
+              <th>Book Name</th>
+              <th>Description</th>
+              <th>Action</th>
             </tr>
-          ) :
-            bookData
-            .filter((resource) => {
-              const searchLower = search.toLowerCase();
-              const bookNameLower = resource.bookName.toLowerCase();
-              const descriptionLower = resource.description.toLowerCase();
-          
-              return (
-                searchLower === "" ||
-                bookNameLower.includes(searchLower) ||
-                descriptionLower.includes(searchLower)
-              );
-            }).map(data=> 
-                <tr key={data._id} onMouseOver={()=>setExistingFileName(data?.imgFileName)} className="text-gray-950">
-                <td>
-                  {
-                    data._id === bookId && edit 
-                    ?
-                    <div>
-                    <input onChange={handleFileUpload} type="file" id="upload" hidden />
-                    <label htmlFor="upload" className='lg:inline-block cursor-pointer'>
-                        <div className='flex items-center justify-center'>
-                        <div className="avatar relative" title="update image">
-                      <div className="mask mask-squircle w-12 h-12">
-                        <img className="opacity-50" src={"http://"+data?.imagePath} alt="Avatar Tailwind CSS Component" />
-                      </div>
-                    </div>
-                            <span className='text-[#FFFFFF] font-medium lg:text-base text-sm absolute'>
-                                <BsUpload className="text-[#DC2626] text-xl font-bold" />
-                            </span>
-                        </div>
-                    </label>
-                </div>
-                :
-                <div className="flex items-center space-x-3">
-                    <div className="avatar">
-                      <div className="mask mask-squircle w-12 h-12">
-                        <img src={"http://"+data?.imagePath} alt="Avatar Tailwind CSS Component" />
-                      </div>
+          </thead>
+    <tbody>
+      {
+        
+        bookData.length === 0 ? (
+          <tr>
+            <td colSpan="4">Data not found</td>
+          </tr>
+        ) :
+          bookData
+          .filter((resource) => {
+            const searchLower = search.toLowerCase();
+            const bookNameLower = resource.bookName.toLowerCase();
+            const descriptionLower = resource.description.toLowerCase();
+        
+            return (
+              searchLower === "" ||
+              bookNameLower.includes(searchLower) ||
+              descriptionLower.includes(searchLower)
+            );
+          }).map(data=> 
+              <tr key={data._id} onMouseOver={()=>setExistingFileName(data?.imgFileName)} className="text-gray-950">
+              <td>
+                {
+                  data._id === bookId && edit 
+                  ?
+                  <div>
+                  <input onChange={handleFileUpload} type="file" id="upload" hidden />
+                  <label htmlFor="upload" className='lg:inline-block cursor-pointer'>
+                      <div className='flex items-center justify-center'>
+                      <div className="avatar relative" title="update image">
+                    <div className="mask mask-squircle w-12 h-12">
+                      <img className="opacity-50" src={"http://"+data?.imagePath} alt="Avatar Tailwind CSS Component" />
                     </div>
                   </div>
+                          <span className='text-[#FFFFFF] font-medium lg:text-base text-sm absolute'>
+                              <BsUpload className="text-[#DC2626] text-xl font-bold" />
+                          </span>
+                      </div>
+                  </label>
+              </div>
+              :
+              <div className="flex items-center space-x-3">
+                  <div className="avatar">
+                    <div className="mask mask-squircle w-12 h-12 cursor-pointer">
+                    <PhotoProvider>
+                    <PhotoView src={"http://"+data?.imagePath}>
+                      <img src={"http://"+data?.imagePath} alt="Avatar Tailwind CSS Component" />
+                    </PhotoView>
+                  </PhotoProvider>
+                      {/* <img src={"http://"+data?.imagePath} alt="Avatar Tailwind CSS Component" /> */}
+                    </div>
+                  </div>
+                </div>
+                }
+              </td>
+              <td>
+                  {
+                      data._id === bookId && edit ? <input  {...register("bookName")} className=" w-full bg-white input input-bordered input-primary text-gray-950 text-lg" defaultValue={data.bookName} placeholder="write book name" />
+                      :
+                      <p>{data.bookName.length > 20 ? data.bookName.slice(0, 20)+"..." : data.bookName}</p>
                   }
-                </td>
-                <td>
-                    {
-                        data._id === bookId && edit ? <textarea  {...register("bookName")} className="textarea w-full bg-white textarea-primary text-gray-950 text-lg" defaultValue={data.bookName} placeholder="write book name"></textarea>
-                        :
-                        <p>{data.bookName.length > 20 ? data.bookName.slice(0, 20)+"..." : data.bookName}</p>
-                    }
-                </td>
-                <td>
-                    {
-                         data._id === bookId && edit ? <textarea {...register("description")} className="textarea w-full bg-white textarea-primary text-gray-950 text-lg" defaultValue={data.description} placeholder="write description"></textarea>
-                         :
-                         <p>
-                           { data.description.replace(/<[^>]+>/g, '').length > 20 ? data.description.replace(/<[^>]+>/g, '').slice(0, 20)+"..." : data.description.replace(/<[^>]+>/g, '')}
-                         </p>
-                    }
-                    </td>
-                <th className="dropdown dropdown-bottom">
-                  <button className="btn bg-red-600 btn-xs border-none hover:bg-red-600 text-white">Actions <FaCaretDown /></button>
-                  <ul tabIndex={0} className="p-2 shadow menu dropdown-content z-[1] bg-white rounded-box w-24 text-gray-950">
-                    <li onClick={()=>editData(edit)}>
-                        {
-                            data._id === bookId && edit ?  <span className="hover:text-gray-950" onClick={()=>setBookId(data._id)}>Cancel</span>
-                            : 
-                            <span className="hover:text-gray-950" onClick={()=>setBookId(data._id)}>Edit</span>
-                        }
-                       
-                        </li>
-                    <li>
-                        {
-                            data._id === bookId && edit 
-                            ? 
-                            <button onClick={()=>setSave(true)} type="submit" className="text-green-600 hover:text-green-600">Save</button>
-                            :
-                            <span onClick={()=>deleteBook(data._id)} className="text-red-600 hover:text-red-600">Delete</span>
-                        }
-                        
-                        
-                        </li>
-                </ul>
-                </th>
-              </tr>
-            )
-        }
+              </td>
+              <td>
+                  {
+                       data._id === bookId && edit ? <textarea {...register("description")} className="textarea w-full bg-white textarea-primary text-gray-950 text-lg" defaultValue={data.description} placeholder="write description"></textarea>
+                       :
+                       <p>
+                         { data.description.replace(/<[^>]+>/g, '').length > 20 ? data.description.replace(/<[^>]+>/g, '').slice(0, 20)+"..." : data.description.replace(/<[^>]+>/g, '')}
+                       </p>
+                  }
+                  </td>
+              <th className="dropdown dropdown-bottom">
+                <button className="btn bg-red-600 btn-xs border-none hover:bg-red-600 text-white">Actions <FaCaretDown /></button>
+                <ul tabIndex={0} className="p-2 shadow menu dropdown-content z-[1] bg-white rounded-box w-24 text-gray-950">
+                  <li onClick={()=>editData(edit)}>
+                      {
+                          data._id === bookId && edit ?  <span className="hover:text-gray-950" onClick={()=>setBookId(data._id)}>Cancel</span>
+                          : 
+                          <span className="hover:text-gray-950" onClick={()=>setBookId(data._id)}>Edit</span>
+                      }
+                     
+                      </li>
+                  <li>
+                      {
+                          data._id === bookId && edit 
+                          ? 
+                          <button onClick={()=>setSave(true)} type="submit" className="text-green-600 hover:text-green-600">Save</button>
+                          :
+                          <span onClick={()=>deleteBook(data._id)} className="text-red-600 hover:text-red-600">Delete</span>
+                      }
+                      
+                      
+                      </li>
+              </ul>
+              </th>
+            </tr>
+          )
+      }
 
-    </tbody>
-  </table>
- </form>
+  </tbody>
+</table>
+</form>
+      }
 </div>
 <AdminEbookModal modalIsopen={isOpen} coloseModal={closeModal} />
         </div>

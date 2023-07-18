@@ -24,23 +24,27 @@ const AdminLiveSeminarModal=({modalIsopen, coloseModal, id})=>{
     const formatDate = year + "-" + month + "-" + day;
 
     const {aboutUniversity,classStartTime,date,imagePath,publishDate,registrationTiming,universityName, _id } = liveSeminarData;
-    const liveSeminarDatas=()=>{
-      //get one live seminar data
+
+   const getOneData=()=>{
     if(id){
-      axios.get(`${import.meta.env.VITE_REACT_APP_SERVER_URL}/liveOnlineSeminar/${id}`)
+      //get one live seminar data
+  axios.get(`${import.meta.env.VITE_REACT_APP_SERVER_URL}/liveOnlineSeminar/${id}`)
     .then(response => {
       setLiveSeminarData(response.data);
   })
   .catch(error => {
     console.error(error);
   });
-    }
-    }
-  
+}
+   }
+    
+  useEffect(()=>{
+    getOneData();
+  },[id])
 
-    useEffect(()=>{
-      liveSeminarDatas();
-    },[id])
+    // useEffect(()=>{
+    //   liveSeminarDatas();
+    // },[id, ()=>liveSeminarDatas(id)])
 
     const onSubmit = data => {
       const selectedTime = addAmPmIndicator(data?.time);
@@ -55,8 +59,6 @@ const AdminLiveSeminarModal=({modalIsopen, coloseModal, id})=>{
                 publishDate: formatDate
             }
             if(id){
-              console.log("hello")
-              console.log(liveSeminarData)
               axios.patch(`${import.meta.env.VITE_REACT_APP_SERVER_URL}/liveOnlineSeminar/${id}`,{
                 ...live_seminar_Data
               })
@@ -153,13 +155,13 @@ const AdminLiveSeminarModal=({modalIsopen, coloseModal, id})=>{
       <label className="label">
         <span className="label-text">University Name</span>
       </label>
-      <input {...register("universityName")} defaultValue={universityName ? universityName : null} type="text" placeholder="University Name" className="input input-bordered input-primary w-full bg-white" required />
+      <input {...register("universityName")}  type="text" placeholder="University Name" className="input input-bordered input-primary w-full bg-white" required />
     </div>
     <div className="w-full">
       <label className="label">
         <span className="label-text">About University</span>
       </label>
-      <textarea {...register("aboutUniversity")} defaultValue={aboutUniversity ? aboutUniversity : null} className="textarea textarea-bordered w-full bg-white textarea-primary" placeholder="About University" required></textarea>
+      <textarea {...register("aboutUniversity")}  className="textarea textarea-bordered w-full bg-white textarea-primary" placeholder="About University" required></textarea>
     </div>
     <div className="flex mt-4 items-center">
     <div className="w-full relative">
@@ -169,7 +171,6 @@ const AdminLiveSeminarModal=({modalIsopen, coloseModal, id})=>{
       <input
 {...register("timingRegistration")}
 type="date"
-defaultValue={registrationTiming ? registrationTiming : null}
 className="bg-white text-gray-950 input input-bordered input-primary cursor-pointer"
 />
       {/* <input {...register("time")} type="time"  className="bg-white text-gray-950 input input-bordered input-primary cursor-pointer" id="myDateInput" defaultValue="00:00" /> */}

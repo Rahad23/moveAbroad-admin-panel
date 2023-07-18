@@ -9,10 +9,10 @@ const Drawer =()=>{
     <label htmlFor="my-drawer" className="drawer-overlay"></label>
     <ul className="menu p-4 w-72 h-full bg-[#ffffff] text-base-content">
       {/* Sidebar content here */}
-      <li><Link to={"/adminEbooks"} className="hover:bg-white focus:text-gray-950 font-medium text-base text-gray-950 justify-between">E_Books<FaBook className="text-lg" /></Link></li>
-      <li><Link to={"/live_seminar"} className="hover:bg-white focus:text-gray-950 font-medium text-base text-gray-950 justify-between">Live online seminar<AiOutlineDeliveredProcedure className="text-lg" /></Link></li>
       <li><Link className="hover:bg-white focus:text-gray-950 font-medium text-base text-gray-950 justify-between">Users <AiOutlineUserSwitch className="text-lg" />
       </Link></li>
+      <li><Link to={"/adminEbooks"} className="hover:bg-white focus:text-gray-950 font-medium text-base text-gray-950 justify-between">E_Books<FaBook className="text-lg" /></Link></li>
+      <li><Link to={"/live_seminar"} className="hover:bg-white focus:text-gray-950 font-medium text-base text-gray-950 justify-between">Live online seminar<AiOutlineDeliveredProcedure className="text-lg" /></Link></li>
     </ul>
   </div>
 </div>

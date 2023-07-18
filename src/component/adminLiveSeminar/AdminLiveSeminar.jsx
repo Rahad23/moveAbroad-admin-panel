@@ -1,5 +1,5 @@
 import "./adminLiveSeminarStyle/AdminLiveSeminar.css"
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import AdminLiveSeminarModal from "./AdminLiveSeminarModal";
 import { BsSearch } from "react-icons/bs";
 import { FaCaretDown } from "react-icons/fa";
@@ -13,25 +13,28 @@ function AdminLiveSeminar() {
   const [search, setSearch]=useState('');
   const [liveSeminarData, setLiveSeminarData] = useState([]);
   const [liveSeminarId, setLiveSeminarId]=useState('');
-    const [isOpen, setIsOpen] = useState(false);
-
-
+  const [isOpen, setIsOpen] = useState(false);
+  const [loader, setLoader] = useState(true);
+  
+  useEffect(() => {
+    // Fetch live seminar data when the component mounts
     axios.get(`${import.meta.env.VITE_REACT_APP_SERVER_URL}/liveOnlineSeminar`)
-    .then(response => {
-      console.log(response.data);
+    .then((response) => {
+      setLoader(false);
       setLiveSeminarData(response?.data);
-  })
-  .catch(error => {
-    console.error(error);
-  });
-
+    })
+    .catch((error) => {
+      console.error(error);
+    });
+    console.log("ok")
+  }, []);
 
       const openModal = () => {
         setIsOpen(true);
       };
       const closeModal = () => {
         setIsOpen(false);
-        setLiveSeminarId(null);
+        // setLiveSeminarId(null);
       };
       
       const getId=(_id)=>{
@@ -56,7 +59,7 @@ function AdminLiveSeminar() {
             .then(response => {
               console.log(response.data);
               if(response.data.acknowledged){
-                // location.reload();
+                location.reload();
             Swal.fire(
             'Deleted!',
             'Your file has been deleted.',
@@ -97,126 +100,89 @@ function AdminLiveSeminar() {
             </div>
           </div>
           <div className="overflow-x-auto">
-          <table className="table">
-    {/* head */}
-    <thead>
-      <tr>
-        <th>University</th>
-        <th>University Name</th>
-        <th>Class start time</th>
-        <th>Registration time</th>
-        {/* <th>Countdown</th> */}
-        <th>Publish Date</th>
-        <th>Actions</th>
-      </tr>
-    </thead>
-    <tbody>
-      {
-        liveSeminarData.length === 0 ? (
-          <tr>
-            <td colSpan="4">Data not found</td>
-          </tr>
-        ) 
+       {
+        loader ? 
+         <div className="flex items-center justify-center h-[340px]">
+          <span className="loader"></span>
+         </div>
         :
-        liveSeminarData.filter((resource) => {
-        const searchLower = search.toLowerCase();
-        const universityNameLower = resource.universityName.toLowerCase();
-        const universityDescriptionLower = resource.aboutUniversity.toLowerCase();
-        const classStartTime = resource.classStartTime.toLowerCase();
-        const publishDate = resource.publishDate.toLowerCase();
-        return (
-          searchLower === "" ||
-          universityNameLower.includes(searchLower) ||
-          universityDescriptionLower.includes(searchLower) ||
-          classStartTime.includes(searchLower) ||
-          publishDate.includes(searchLower)
-        );
-      }).map(data=>
-        <tr key={data?.key}>
-        <td>
-          <div className="flex items-center space-x-3 cursor-pointer">
-            <div className="avatar">
-              <div className="mask mask-squircle w-12 h-12">
-              <PhotoProvider>
-                <PhotoView src={"http://"+data?.imagePath}>
-                  <img src={"http://"+data?.imagePath} alt="Avatar Tailwind CSS Component" />
-                </PhotoView>
-              </PhotoProvider>
+        <table className="table text-gray-950">
+        {/* head */}
+        <thead className="text-gray-950">
+          <tr>
+            <th>University</th>
+            <th>University Name</th>
+            <th>Class start time</th>
+            <th>Registration time</th>
+            {/* <th>Countdown</th> */}
+            <th>Publish Date</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {
+            liveSeminarData.length === 0 ? (
+              <tr>
+                <td colSpan="4">Data not found</td>
+              </tr>
+            ) 
+            :
+            liveSeminarData.filter((resource) => {
+            const searchLower = search.toLowerCase();
+            const universityNameLower = resource.universityName.toLowerCase();
+            const universityDescriptionLower = resource.aboutUniversity.toLowerCase();
+            const classStartTime = resource.classStartTime.toLowerCase();
+            const publishDate = resource.publishDate.toLowerCase();
+            return (
+              searchLower === "" ||
+              universityNameLower.includes(searchLower) ||
+              universityDescriptionLower.includes(searchLower) ||
+              classStartTime.includes(searchLower) ||
+              publishDate.includes(searchLower)
+            );
+          }).map(data=>
+            <tr key={data?.key}>
+            <td>
+              <div className="flex items-center space-x-3 cursor-pointer">
+                <div className="avatar">
+                  <div className="mask mask-squircle w-12 h-12">
+                  <PhotoProvider>
+                    <PhotoView src={"http://"+data?.imagePath}>
+                      <img src={"http://"+data?.imagePath} alt="Avatar Tailwind CSS Component" />
+                    </PhotoView>
+                  </PhotoProvider>
+                  </div>
+                </div>
               </div>
-            </div>
-          </div>
-        </td>
-        <td>
-          {data?.universityName}
-        </td>
-        <td>{data?.classStartTime}</td>
-        <td>
-         {data?.registrationTiming}
-        </td>
-        {/* <td>
-        <div className="grid grid-flow-col gap-0 text-center auto-cols-max">
-  <div className="flex flex-col p-2  bg-white text-neutral-content">
-    <span className="countdown font-mono text-sm">
-      <span style={{"--value":data.countdown?.months}}></span>
-    </span>
-    month
-  </div> 
-  <div className="flex flex-col p-2  bg-white text-neutral-content">
-    <span className="countdown font-mono text-sm">
-      <span style={{"--value":data.countdown?.days}}></span>
-    </span>
-    days
-  </div> 
-  <div className="flex flex-col p-2  bg-white text-neutral-content">
-    <span className="countdown font-mono text-sm">
-      <span style={{"--value":data.countdown?.hours}}></span>
-    </span>
-    hours
-  </div> 
-  <div className="flex flex-col p-2  bg-white text-neutral-content">
-    <span className="countdown font-mono text-sm">
-      <span style={{"--value":data.countdown?.minutes}}></span>
-    </span>
-    min
-  </div>
-  <div className="flex flex-col p-2  bg-white text-neutral-content">
-    <span className="countdown font-mono text-sm">
-      <span style={{"--value":data.countdown?.seconds}}></span>
-    </span>
-    sec
-  </div>
-</div> */}
-          {/* <div>
-             <span>{data.countdown?.months}</span>-
-             <span>{data.countdown?.days}</span>-
-             <span>{data.countdown?.hours}</span>-
-             <span>{data.countdown?.minutes}</span>-
-             <span>{data.countdown?.seconds}</span>
-          </div> */}
-        {/* </td> */}
-        {/* <td>
-         {data?.aboutUniversity.length > 10 ? data?.aboutUniversity.slice(0, 10)+"..." : data?.aboutUniversity}
-        </td> */}
-        <td>
-          {data?.publishDate}
-        </td>
-        <th className="dropdown dropdown-bottom">
-        <button className="btn bg-red-600 btn-xs border-none hover:bg-red-600 text-white">Actions <FaCaretDown /></button>
-        <ul tabIndex={0} className="p-2 shadow menu dropdown-content z-[1] bg-white w-24 text-gray-950">
-                    <li>
-                            <span onClick={()=>getId(data?._id)} className="hover:text-gray-950">Edit</span>
-                        </li>
-                    <li>
-                            <span onClick={()=>liveSeminarDelete(data?._id)} className="text-red-600 hover:text-red-600">Delete</span>
-                        </li>
-                </ul>
-        </th>
-      </tr>
-        ) 
-
-      }
-    </tbody>
-  </table>
+            </td>
+            <td>
+              {data?.universityName}
+            </td>
+            <td>{data?.classStartTime}</td>
+            <td>
+             {data?.registrationTiming}
+            </td>
+            <td>
+              {data?.publishDate}
+            </td>
+            <th className="dropdown dropdown-bottom">
+            <button className="btn bg-red-600 btn-xs border-none hover:bg-red-600 text-white">Actions <FaCaretDown /></button>
+            <ul tabIndex={0} className="p-2 shadow menu dropdown-content z-[1] bg-white w-24 text-gray-950">
+                        <li>
+                                <span onClick={()=>getId(data?._id)} className="hover:text-gray-950">Edit</span>
+                            </li>
+                        <li>
+                                <span onClick={()=>liveSeminarDelete(data?._id)} className="text-red-600 hover:text-red-600">Delete</span>
+                            </li>
+                    </ul>
+            </th>
+          </tr>
+            ) 
+    
+          }
+        </tbody>
+      </table>
+       }
           </div>
         </div>
       </div>
