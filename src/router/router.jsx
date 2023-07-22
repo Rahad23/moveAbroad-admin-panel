@@ -2,6 +2,7 @@ import { createBrowserRouter } from "react-router-dom";
 import AdminHome from "../component/adminHome/AdminHome";
 import AdminEBooks from "../component/adminEBooks/AdminEBooks";
 import AdminLiveSeminar from "../component/adminLiveSeminar/AdminLiveSeminar";
+import Login from "../component/Login_Registration/Login";
 
 const router = createBrowserRouter([
     {
@@ -15,8 +16,13 @@ const router = createBrowserRouter([
             {
                 path:"/live_seminar",
                 element: <AdminLiveSeminar />
-            }
+            },
+            
         ]
+    },
+    {
+        path: "/login",
+        element: <Login />
     }
 ]);
 

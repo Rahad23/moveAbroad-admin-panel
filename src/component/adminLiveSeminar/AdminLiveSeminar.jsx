@@ -26,14 +26,15 @@ function AdminLiveSeminar() {
     .catch((error) => {
       console.error(error);
     });
-    console.log("ok")
   }, []);
 
       const openModal = () => {
         setIsOpen(true);
       };
+
       const closeModal = () => {
         setIsOpen(false);
+        setLiveSeminarId("");
         // setLiveSeminarId(null);
       };
       
@@ -53,7 +54,6 @@ function AdminLiveSeminar() {
         confirmButtonText: 'Yes, delete it!'
       }).then((result) => {
         if (result.isConfirmed) {
-
           axios.delete(
             axios.delete(`${import.meta.env.VITE_REACT_APP_SERVER_URL}/liveOnlineSeminar/${_id}`)
             .then(response => {
