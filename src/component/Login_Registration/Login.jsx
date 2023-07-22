@@ -7,15 +7,18 @@ import { useEffect } from "react";
 import { useState } from "react";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
-import useToken from "../hooks/useToken";
+import { getSession, setSession } from "./SessionManagement/SessionManagement";
 
 const Login=()=>{
     const { register, handleSubmit, formState: { errors }, reset } = useForm();
     const [admin, setAdmin] = useState([]);
-    const [loader, setLoader] = useState(true);
+    // const [loader, setLoader] = useState(true);
     const navigate = useNavigate();
 
-
+    const {isLoggedIn} = getSession();
+    if(isLoggedIn){
+        navigate("/");
+    }
     const onSubmit = data => {
         const email = data?.email;
         const password = data?.password;
@@ -29,6 +32,7 @@ const Login=()=>{
                 } else {
                   if (isMatch) {
                         toast.success("login successfully")
+                        setSession(adminData?.email, true);
                         navigate("/")
                         reset();
                   } else {
@@ -36,13 +40,12 @@ const Login=()=>{
                   }
                 }
               })
-
             )
     };
     useEffect(()=>{
         axios.get(`${import.meta.env.VITE_REACT_APP_SERVER_URL}/admin`)
         .then(response => {
-          setLoader(false);
+        //   setLoader(false);
           setAdmin(response.data);
         })
         .catch(error => {
@@ -55,6 +58,7 @@ const Login=()=>{
 <div className="hero-content flex justify-between">
 <div className="card w-[450px] shadow-md bg-white border-[1px] border-[#ddd]">
 <div className="card-body">
+    <h1 className="text-2xl text-center text-gray-950 font-semibold">Move<span className="text-[#ED1C20]">Abroad</span></h1>
 <form onSubmit={handleSubmit(onSubmit)}>
 <div className="form-control">
     <label className="label">

@@ -7,6 +7,8 @@ import axios from "axios";
 import Swal from "sweetalert2";
 import { PhotoProvider, PhotoView } from 'react-photo-view';
 import 'react-photo-view/dist/react-photo-view.css';
+import { getSession } from "../Login_Registration/SessionManagement/SessionManagement";
+import { useNavigate } from "react-router-dom";
 
 
 function AdminLiveSeminar() {
@@ -15,7 +17,8 @@ function AdminLiveSeminar() {
   const [liveSeminarId, setLiveSeminarId]=useState('');
   const [isOpen, setIsOpen] = useState(false);
   const [loader, setLoader] = useState(true);
-  
+  const {isLoggedIn } = getSession();
+  const navigate = useNavigate();
   useEffect(() => {
     // Fetch live seminar data when the component mounts
     axios.get(`${import.meta.env.VITE_REACT_APP_SERVER_URL}/liveOnlineSeminar`)
@@ -27,7 +30,9 @@ function AdminLiveSeminar() {
       console.error(error);
     });
   }, []);
-
+if(!isLoggedIn){
+  navigate('/login');
+}
       const openModal = () => {
         setIsOpen(true);
       };

@@ -1,6 +1,6 @@
 // hooks/useToken.js
 import axios from "axios";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import toast from "react-hot-toast";
 
 const useToken = (email) => {

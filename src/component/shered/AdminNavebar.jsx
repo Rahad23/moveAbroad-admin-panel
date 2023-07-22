@@ -2,7 +2,11 @@ import { Link } from "react-router-dom";
 import "./style/NavbarStyle.css";
 import { GoTriangleDown } from "react-icons/go";
 import { AiOutlineLogout } from "react-icons/ai";
+import { clearSession } from "../Login_Registration/SessionManagement/SessionManagement";
 const AdminNavebar=()=>{
+  const logOut=()=>{
+    clearSession();
+  }
     return(
       <div>
           <div className="navbar bg-white px-6 shadow-sm">
@@ -28,7 +32,7 @@ const AdminNavebar=()=>{
     <li className="shadow-none"><Link className="hover:bg-gray-50 focus:text-gray-950 rounded-none">Profile</Link></li>
     <li className="shadow-none"><Link className="hover:bg-gray-50 focus:text-gray-950 rounded-none">Settings</Link></li>
     <li className="shadow-none"><Link className="hover:bg-gray-50 focus:text-gray-950 rounded-none">Help</Link></li>
-    <li className="shadow-none hover:rounded-none"><Link className="hover:bg-gray-50 justify-between focus:text-red-600 text-red-600">Log Out <AiOutlineLogout /></Link></li>
+    <li className="shadow-none hover:rounded-none" onClick={logOut}><Link className="hover:bg-gray-50 justify-between focus:text-red-600 text-red-600">Log Out <AiOutlineLogout /></Link></li>
   </ul>
   </label>
   </div>
