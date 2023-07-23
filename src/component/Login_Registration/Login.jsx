@@ -12,6 +12,10 @@ import { getSession, setSession } from "./SessionManagement/SessionManagement";
 const Login=()=>{
     const { register, handleSubmit, formState: { errors }, reset } = useForm();
     const [admin, setAdmin] = useState([]);
+ 
+    // const checkbox = document.getElementById('rememberMe');
+
+    
     // const [loader, setLoader] = useState(true);
     const navigate = useNavigate();
 
@@ -32,7 +36,20 @@ const Login=()=>{
                 } else {
                   if (isMatch) {
                         toast.success("login successfully")
-                        setSession(adminData?.email, true);
+     
+                          // axios.post(`${import.meta.env.VITE_REACT_APP_SERVER_URL}/jwt`, {
+                          //   headers: {
+                          //     'Content-Type': 'application/json',
+                          //   },
+                          //   email: email,
+                          // })
+                          // .then((response) => {
+                          //   console.log(response.data.accessToken);
+                          //   setSession(response.data.accessToken, true);
+                          // }, (error) => {
+                          //   console.log(error);
+                          // });
+                          setSession(null, true);
                         navigate("/")
                         reset();
                   } else {
@@ -78,6 +95,12 @@ const Login=()=>{
     errors.password && <span className="text-red-700">This field is required</span>
     }
     <div className="flex justify-between">
+    {/* <div className="form-control">
+  <label className="cursor-pointer label">
+    <input type="checkbox" id="rememberMe" className="text-white bg-white mr-1" />
+    <span className="label-text">Remember me</span>
+  </label>
+</div> */}
     <label className="label">
       <a href="#" className="label-text-alt link link-hover">Forgot password?</a>
     </label>

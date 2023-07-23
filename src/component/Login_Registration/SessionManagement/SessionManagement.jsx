@@ -1,18 +1,25 @@
 
-export const setSession = (username, isLoggedIn) => {
-    localStorage.setItem('email', username);
+export const setSession = (token, isLoggedIn) => {
+    localStorage.setItem('token', token)
     localStorage.setItem('isLoggedIn', isLoggedIn);
   };
   
 
   export const getSession = () => {
-    const username = localStorage.getItem('username');
+    const token = localStorage.getItem('token');
     const isLoggedIn = localStorage.getItem('isLoggedIn');
-    return { username, isLoggedIn: isLoggedIn === 'true' };
+    return { token, isLoggedIn: isLoggedIn === 'true' };
   };
 
   export const clearSession = () => {
-    localStorage.removeItem('username');
+    localStorage.removeItem('token');
     localStorage.removeItem('isLoggedIn');
   };
   
+  // export const tokenVerifiedLogout=()=>{
+  //   const token = localStorage.getItem('token');
+  //   if(!token){
+  //     localStorage.removeItem('token');
+  //     localStorage.removeItem('isLoggedIn');
+  //   }
+  // }
