@@ -28,7 +28,8 @@ const Login=()=>{
         const password = data?.password;
         admin.map(adminData=>
             bcrypt.compare(password, adminData?.password, function(err, isMatch) {
-                if(adminData?.email !== email){
+
+              if(adminData?.email !== email){
                    return toast.error("Email is incorrect!")
                 }
                 if (err) {
