@@ -1,82 +1,79 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
 import { FaCaretDown } from "react-icons/fa";
-import { BsSearch, BsUpload } from "react-icons/bs";
+import { BsSearch} from "react-icons/bs";
 import AdminEbookModal from "./AdminEbookModal";
-import { useForm } from "react-hook-form";
-import { toast } from "react-hot-toast";
+// import { useForm } from "react-hook-form";
+// import { toast } from "react-hot-toast";
 import Swal from "sweetalert2";
 import 'react-photo-view/dist/react-photo-view.css';
 import { PhotoProvider, PhotoView } from "react-photo-view";
 import { getSession } from "../Login_Registration/SessionManagement/SessionManagement";
 import { useNavigate } from "react-router-dom";
 const AdminEBooks=()=>{
-  const { register, handleSubmit } = useForm();
-  const [imgFileName, setImgFileName] = useState('');
-  const [bookId, setBookId] = useState('');
-  const [existingFileName, setExistingFileName] = useState('');
-  const [edit, setEdit]=useState(false);
+  // const { handleSubmit } = useForm();
+  // const [imgFileName, setImgFileName] = useState('');
+  // const [bookId, setBookId] = useState('');
+  // const [existingFileName, setExistingFileName] = useState('');
   const [bookData, setBookData] = useState([]);
-  const [save, setSave]=useState(false);
+  // const [save, setSave]=useState(false);
   const [search, setSearch]=useState('');
   const [isOpen, setIsOpen] = useState(false);
   const [loader, setLoader]=useState(true);
   const {isLoggedIn } = getSession();
+  const [eBookId, setEbookId] = useState('');
+  const [editEbook, setEditEBook] = useState(false);
   // console.log(search);
   const navigate = useNavigate();
- 
-  const eBookUpdate = data => {
-    if(data?.bookName && data?.description && imgFileName || existingFileName && save){
-      const E_Book_Data = {
-        bookName: data?.bookName,
-        description: data?.description,
-        imgFileName: imgFileName ? imgFileName : existingFileName
-    }
-    axios.patch(`${import.meta.env.VITE_REACT_APP_SERVER_URL}/ebook/${bookId}`, {
-      ...E_Book_Data
-    })
-    .then(response => {
-      // Handle successful response
-      console.log(response.data.acknowledged);
-      if(response.data.acknowledged){
-        toast.success("Update successfully");
-        setEdit(false);
-        setSave(false);
-        location.reload();
-      }
-    })
-    .catch(error => {
-      // Handle error
-      console.error(error);
-    });
 
-    }
-  }
+  // const eBookUpdate = data => {
+  //   if(data?.bookName && data?.description && imgFileName || existingFileName && save){
+  //     const E_Book_Data = {
+  //       bookName: data?.bookName,
+  //       description: data?.description,
+  //       imgFileName: imgFileName ? imgFileName : existingFileName
+  //   }
+  //   axios.patch(`${import.meta.env.VITE_REACT_APP_SERVER_URL}/ebook/${bookId}`, {
+  //     ...E_Book_Data
+  //   })
+  //   .then(response => {
+  //     // Handle successful response
+  //     console.log(response.data.acknowledged);
+  //     if(response.data.acknowledged){
+  //       toast.success("Update successfully");
+  //       setEdit(false);
+  //       setSave(false);
+  //       location.reload();
+  //     }
+  //   })
+  //   .catch(error => {
+  //     // Handle error
+  //     console.error(error);
+  //   });
 
-  function handleFileUpload(event) {
-    const files = event.target.files;
-    const file = files[0];
+  //   }
+  // }
+
+  // function handleFileUpload(event) {
+  //   const files = event.target.files;
+  //   const file = files[0];
     
-    if (file) {
-      const formData = new FormData();
-      formData.append('files', file);
-      axios.post(`${import.meta.env.VITE_REACT_APP_SERVER_URL}/upload`, formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data'
-        }
-      })
-        .then(response => {
-          setImgFileName(response.data.filename);
-        })
-        .catch(error => {
-          console.error(error);
-        });
-    }
-  }
-
-    const editData=(method)=>{
-        setEdit(!method)
-    }
+  //   if (file) {
+  //     const formData = new FormData();
+  //     formData.append('files', file);
+  //     axios.post(`${import.meta.env.VITE_REACT_APP_SERVER_URL}/upload`, formData, {
+  //       headers: {
+  //         'Content-Type': 'multipart/form-data'
+  //       }
+  //     })
+  //       .then(response => {
+  //         setImgFileName(response.data.filename);
+  //       })
+  //       .catch(error => {
+  //         console.error(error);
+  //       });
+  //   }
+  // }
 
 
     const getEbookData=()=>{
@@ -152,7 +149,6 @@ loader ? <div className="flex items-center justify-center h-[400px]">
 <span className="loader"></span>
 </div>
 :
-<form onSubmit={handleSubmit(eBookUpdate)}>
 <table className="table mt-14">
 {/* head */}
 <thead className="text-gray-950">
@@ -183,27 +179,27 @@ bookData
    descriptionLower.includes(searchLower)
  );
 }).map(data=> 
-   <tr key={data._id} onMouseOver={()=>setExistingFileName(data?.imgFileName)} className="text-gray-950">
+   <tr key={data._id} className="text-gray-950">
    <td>
      {
-       data._id === bookId && edit 
-       ?
-       <div>
-       <input onChange={handleFileUpload} type="file" id="upload" hidden />
-       <label htmlFor="upload" className='lg:inline-block cursor-pointer'>
-           <div className='flex items-center justify-center'>
-           <div className="avatar relative" title="update image">
-         <div className="mask mask-squircle w-12 h-12">
-           <img className="opacity-50" src={"http://"+data?.imagePath} alt="Avatar Tailwind CSS Component" />
-         </div>
-       </div>
-               <span className='text-[#FFFFFF] font-medium lg:text-base text-sm absolute'>
-                   <BsUpload className="text-[#DC2626] text-xl font-bold" />
-               </span>
-           </div>
-       </label>
-   </div>
-   :
+  //      data._id === bookId && edit 
+  //      ?
+  //      <div>
+  //      <input onChange={handleFileUpload} type="file" id="upload" hidden />
+  //      <label htmlFor="upload" className='lg:inline-block cursor-pointer'>
+  //          <div className='flex items-center justify-center'>
+  //          <div className="avatar relative" title="update image">
+  //        <div className="mask mask-squircle w-12 h-12">
+  //          <img className="opacity-50" src={"http://"+data?.imagePath} alt="Avatar Tailwind CSS Component" />
+  //        </div>
+  //      </div>
+  //              <span className='text-[#FFFFFF] font-medium lg:text-base text-sm absolute'>
+  //                  <BsUpload className="text-[#DC2626] text-xl font-bold" />
+  //              </span>
+  //          </div>
+  //      </label>
+  //  </div>
+  //  :
    <div className="flex items-center space-x-3">
        <div className="avatar">
          <div className="mask mask-squircle w-12 h-12 cursor-pointer">
@@ -220,15 +216,11 @@ bookData
    </td>
    <td>
        {
-           data._id === bookId && edit ? <input  {...register("bookName")} className=" w-full bg-white input input-bordered input-primary text-gray-950 text-lg" defaultValue={data.bookName} placeholder="write book name" />
-           :
            <p>{data.bookName.length > 20 ? data.bookName.slice(0, 20)+"..." : data.bookName}</p>
        }
    </td>
    <td>
        {
-            data._id === bookId && edit ? <textarea {...register("description")} className="textarea w-full bg-white textarea-primary text-gray-950 text-lg" defaultValue={data.description} placeholder="write description"></textarea>
-            :
             <p>
               { data.description.replace(/<[^>]+>/g, '').length > 20 ? data.description.replace(/<[^>]+>/g, '').slice(0, 20)+"..." : data.description.replace(/<[^>]+>/g, '')}
             </p>
@@ -237,20 +229,15 @@ bookData
    <th className="dropdown dropdown-bottom">
      <button className="btn bg-red-600 btn-xs border-none hover:bg-red-600 text-white">Actions <FaCaretDown /></button>
      <ul tabIndex={0} className="p-2 shadow menu dropdown-content z-[1] bg-white rounded-box w-24 text-gray-950">
-       <li onClick={()=>editData(edit)}>
+       <li onClick={()=>setEbookId(data._id)}>
            {
-               data._id === bookId && edit ?  <span className="hover:text-gray-950" onClick={()=>setBookId(data._id)}>Cancel</span>
-               : 
-               <span className="hover:text-gray-950" onClick={()=>setBookId(data._id)}>Edit</span>
+               <span className="hover:text-gray-950" onClick={()=>setEditEBook(true)}>Edit</span>
            }
           
            </li>
        <li>
            {
-               data._id === bookId && edit 
-               ? 
-               <button onClick={()=>setSave(true)} type="submit" className="text-green-600 hover:text-green-600">Save</button>
-               :
+             
                <span onClick={()=>deleteBook(data._id)} className="text-red-600 hover:text-red-600">Delete</span>
            }
            
@@ -264,10 +251,9 @@ bookData
 
 </tbody>
 </table>
-</form>
 }
 </div>
-<AdminEbookModal modalIsopen={isOpen} coloseModal={closeModal} />
+<AdminEbookModal modalIsopen={isOpen} id={eBookId} coloseModal={closeModal} editModalF={setEditEBook} editModal={editEbook} />
 </div>
  : 
  navigate("/login")   
